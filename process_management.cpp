@@ -40,7 +40,7 @@ execlp():
 void process_management(std::vector<std::string> cmds)
 {
     pid_t pid;
-    for (const auto& cmd : cmds)
+    for (const std::string& cmd : cmds)
     {
         pid = fork();
         switch (pid)
@@ -52,7 +52,7 @@ void process_management(std::vector<std::string> cmds)
                 std::cout << "PROCESS_MANAGER  child process(" << getpid() << ") executing: " << cmd << std::endl;
 
                 // child logic
-                execlp(cmd.c_str(), cmd.c_str(), nullptr);
+                execlp(cmd.c_str(), cmd.c_str(), nullptr); // will return if successful
                 std::cout << "PROCESS_MANAGER command execution failed" << std::endl;
                 exit(EXIT_FAILURE);
             default:
@@ -60,19 +60,19 @@ void process_management(std::vector<std::string> cmds)
                 
                 // child handling logic
                 int status;
-                pid_t child = waitpid(pid, &status, 0);
+                pid_t child = waitpid(pid, &status, 0); // wait for some event
                 if (child == -1)
                 {
                     std::cerr << "PROCESS_MANAGER  waitpid() failed" << std::endl;
                     exit(EXIT_FAILURE);
                 }
 
-                if (WIFEXITED(status))
+                if (WIFEXITED(status)) // if event is IFEXITED then
                 {
                     std::cout << "PROCESS_MANAGER child(" << getpid() << 
-                    ") exited with status: " << WEXITSTATUS(status) << std::endl;
+                    ") exited with status: " << WEXITSTATUS(status) << std::endl << std::endl;
                 }
-                else
+                else                   // otherwise probably crashed etc
                 {
                     std::cout << "PROCESS_MANAGER child(" << getpid() << 
                     ") failed to exit switfly" << std::endl;
@@ -81,6 +81,7 @@ void process_management(std::vector<std::string> cmds)
         }
     }
 }
+
 
 int main()
 {
